@@ -1,0 +1,82 @@
+model JobFilter {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  json      Json
+  active    Boolean  @default(true)
+
+  @@map("job_filter")
+}
+
+model LinkedInJob {
+  id               Int                @id @default(autoincrement())
+  linkedInJobId    BigInt             @unique @map("linkedin_job_id")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+  lastScrapedAt    DateTime?          @map("last_scraped_at")
+  jobPostingDetail LinkedinJobDetail?
+  isDeleted        Boolean            @default(false) @map("is_deleted")
+
+  @@index([linkedInJobId])
+  @@map("linkedin_job")
+}
+
+model LinkedinJobDetail {
+  id                        Int                        @id @default(autoincrement())
+  checksum                  String
+  jobPostingId              Int                        @unique @map("job_posting_id")
+  jobPosting                LinkedInJob                @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  title                     String
+  location                  String
+  text                      String
+  json                      Json
+  createdAt                 DateTime                   @default(now()) @map("created_at")
+  updatedAt                 DateTime                   @updatedAt @map("updated_at")
+  jobPostingDetailHistories LinkedinJobDetailHistory[]
+
+  linkedinCompany   LinkedinCompany? @relation(fields: [linkedinCompanyId], references: [id])
+  linkedinCompanyId Int?
+
+  @@index([checksum])
+  @@map("linkedin_job_detail")
+}
+
+model LinkedinCompany {
+  id                        Int                        @id @default(autoincrement())
+  companySlug               String                     @unique @map("company_slug")
+  linkedinCompanyId         Int?                       @unique @map("linkedin_company_id")
+  title                     String?
+  description               String?
+  industry                  String?
+  companySize               String?                    @map("company_size")
+  headquartersLocation      String?                    @map("headquarters_location")
+  websiteUrl                String?                    @map("website_url")
+  organizationType          String?                    @map("organization_type")
+  foundedYear               Int?                       @map("founded_year")
+  specialties               String?
+  createdAt                 DateTime                   @default(now()) @map("created_at")
+  updatedAt                 DateTime                   @updatedAt @map("updated_at")
+  lastScrapedAt             DateTime?                  @map("last_scraped_at")
+  jobDetails                LinkedinJobDetail[]
+  jobPostingDetailHistories LinkedinJobDetailHistory[]
+
+  @@map("linkedin_company")
+}
+
+model LinkedinJobDetailHistory {
+  id                 Int               @id @default(autoincrement())
+  jobPostingDetailId Int               @map("job_posting_detail_id")
+  jobPostingDetail   LinkedinJobDetail @relation(fields: [jobPostingDetailId], references: [id], onDelete: Cascade)
+  checksum           String
+  title              String
+  location           String
+  text               String
+  json               Json
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  linkedinCompany   LinkedinCompany? @relation(fields: [linkedinCompanyId], references: [id])
+  linkedinCompanyId Int?
+
+  @@map("linkedin_job_detail_history")
+}

@@ -1,0 +1,38 @@
+You will be extracting structured information from a software engineering job posting. Focus on being precise and literal - only extract information that is explicitly stated in the posting.
+
+Your task is to extract two main categories of information: visa sponsorship details and technical skills requirements.
+
+**Visa Sponsorship Extraction Rules:**
+
+For visa sponsorship, you must categorize the information into one of three categories:
+- "EXPLICITLY_AVAILABLE" - Only use this if the posting clearly states they will sponsor visas, provide sponsorship, or similar explicit language
+- "EXPLICITLY_NOT_AVAILABLE" - Only use this if the posting clearly states they do not sponsor visas, require existing work authorization, or similar explicit language
+- "NOT_MENTIONED" - Use this if there is no clear statement either way about visa sponsorship
+
+When sponsorship is explicitly available or not available, also extract:
+- Specific visa types mentioned (H-1B, O-1, TN, etc.)
+- Timing requirements (immediate, after probation, etc.)
+- Geographic or other restrictions
+- Work authorization requirements
+- Any additional context about their sponsorship policies
+
+**Technical Skills Extraction Rules:**
+
+Extract technical skills and categorize them as:
+- Programming languages
+- Frameworks and libraries
+- Tools and platforms (cloud providers, DevOps tools, version control, etc.)
+- Databases and data storage technologies
+- Domain-specific technical skills
+
+For each skill, note whether it appears to be:
+- Required (must-have, required, essential, etc.)
+- Preferred (nice-to-have, preferred, plus, bonus, etc.)
+
+Also extract years of experience when specifically mentioned for technologies.
+
+**Important Guidelines:**
+- Be conservative - only extract what is clearly stated
+- Preserve important context and exact wording when relevant
+- If information is ambiguous, note the ambiguity
+- Do not infer or assume information not explicitly present
