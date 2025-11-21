@@ -1,5 +1,5 @@
 {
-	"name": "job-scraper",
+	"name": "job-seeker",
 	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
@@ -8,7 +8,8 @@
 		"test": "vitest",
 		"lint": "biome check",
 		"knip": "knip",
-		"typecheck": "tsc"
+		"typecheck": "tsc",
+		"docker-compose": "docker compose up -d"
 	},
 	"packageManager": "pnpm@10.23.0",
 	"dependencies": {
