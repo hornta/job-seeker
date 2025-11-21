@@ -73,7 +73,7 @@ async function scrapeJobsPage(input: LinkedinJobSearchInput) {
 	}
 
 	for (const id of jobIds.values()) {
-		await prisma.jobPosting.upsert({
+		await prisma.linkedinJob.upsert({
 			where: { linkedInJobId: id },
 			create: { linkedInJobId: id },
 			update: {},

@@ -5,24 +5,26 @@ const LAST_SCRAPED_THRESHOLD = 24 * 60 * 60 * 1000;
 
 export async function scrapeJobsTask() {
 	console.log("\n--- Processing Job Postings ---");
-	const nonSyncedOrPotentiallyStalePostings = await prisma.jobPosting.findMany({
-		where: {
-			OR: [
-				{ lastScrapedAt: null },
-				{
-					lastScrapedAt: {
-						lt: new Date(Date.now() - LAST_SCRAPED_THRESHOLD),
+	const nonSyncedOrPotentiallyStalePostings = await prisma.linkedinJob.findMany(
+		{
+			where: {
+				OR: [
+					{ lastScrapedAt: null },
+					{
+						lastScrapedAt: {
+							lt: new Date(Date.now() - LAST_SCRAPED_THRESHOLD),
+						},
 					},
-				},
-			],
-			isDeleted: false,
+				],
+				isDeleted: false,
+			},
+			take: 10,
+			orderBy: {
+				// Descending order to null values comes first
+				lastScrapedAt: "desc",
+			},
 		},
-		take: 10,
-		orderBy: {
-			// Descending order to null values comes first
-			lastScrapedAt: "desc",
-		},
-	});
+	);
 
 	if (nonSyncedOrPotentiallyStalePostings.length === 0) {
 		console.log("No job postings to process at this time.");

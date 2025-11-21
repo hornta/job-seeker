@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 import type { Tool, ToolUseBlock } from "@anthropic-ai/sdk/resources";
 import { toJSONSchema } from "zod";
 import type {
-	JobPosting,
+	LinkedinJob,
 	Prisma,
 } from "../../../../../generated/prisma/client.ts";
 import { anthropicClient } from "../../../../anthropic/anthropicClient.ts";
@@ -16,7 +16,7 @@ import { withRetry } from "../../../../utils/withRetry.ts";
 import { extractCompanyName } from "../../utils/extractUtils.ts";
 import { type JobExtraction, JobExtractionSchema } from "./schemas.ts";
 
-export async function scrapeJobPage(jobPosting: JobPosting) {
+export async function scrapeJobPage(jobPosting: LinkedinJob) {
 	const window = await getHtml(
 		`https://www.linkedin.com/jobs/view/${jobPosting.linkedInJobId}`,
 		{
@@ -24,7 +24,7 @@ export async function scrapeJobPage(jobPosting: JobPosting) {
 				console.log(
 					`Job posting ID ${jobPosting.id} not found (404). Marking as deleted.`,
 				);
-				await prisma.jobPosting.update({
+				await prisma.linkedinJob.update({
 					where: { id: jobPosting.id },
 					data: { isDeleted: true, lastScrapedAt: new Date() },
 				});
@@ -154,7 +154,7 @@ export async function scrapeJobPage(jobPosting: JobPosting) {
 	};
 	const checksum = createChecksum(data);
 
-	const existingDetail = await prisma.jobPostingDetail.findFirst({
+	const existingDetail = await prisma.linkedinJobDetail.findFirst({
 		where: { jobPostingId: jobPosting.id },
 	});
 
@@ -177,7 +177,7 @@ export async function scrapeJobPage(jobPosting: JobPosting) {
 	// Check if we already have this checksum stored
 	// Can help avoid re-processing identical job postings across different jobs
 	// (e.g., if the same job is reposted)
-	const checksumMatch = await prisma.jobPostingDetail.findFirst({
+	const checksumMatch = await prisma.linkedinJobDetail.findFirst({
 		where: {
 			checksum: checksum,
 		},
@@ -193,7 +193,7 @@ export async function scrapeJobPage(jobPosting: JobPosting) {
 
 	await prisma.$transaction(async (tx) => {
 		if (existingDetail) {
-			await tx.jobPostingDetailHistory.create({
+			await tx.linkedinJobDetailHistory.create({
 				data: {
 					checksum: existingDetail.checksum,
 					title: existingDetail.title,
@@ -207,7 +207,7 @@ export async function scrapeJobPage(jobPosting: JobPosting) {
 				},
 			});
 
-			await tx.jobPostingDetail.update({
+			await tx.linkedinJobDetail.update({
 				where: { id: existingDetail.id },
 				data: {
 					checksum,
@@ -219,7 +219,7 @@ export async function scrapeJobPage(jobPosting: JobPosting) {
 				},
 			});
 		} else {
-			await tx.jobPostingDetail.create({
+			await tx.linkedinJobDetail.create({
 				data: {
 					jobPostingId: jobPosting.id,
 					checksum,
@@ -232,7 +232,7 @@ export async function scrapeJobPage(jobPosting: JobPosting) {
 			});
 		}
 
-		await tx.jobPosting.update({
+		await tx.linkedinJob.update({
 			where: { id: jobPosting.id },
 			data: { lastScrapedAt: new Date() },
 		});

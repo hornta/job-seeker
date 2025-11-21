@@ -1,14 +1,4 @@
-model JobFilter {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  json      Json
-  active    Boolean  @default(true)
-
-  @@map("job_filter")
-}
-
-model LinkedInJob {
+model LinkedinJob {
   id               Int                @id @default(autoincrement())
   linkedInJobId    BigInt             @unique @map("linkedin_job_id")
   createdAt        DateTime           @default(now()) @map("created_at")
@@ -25,7 +15,7 @@ model LinkedinJobDetail {
   id                        Int                        @id @default(autoincrement())
   checksum                  String
   jobPostingId              Int                        @unique @map("job_posting_id")
-  jobPosting                LinkedInJob                @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  jobPosting                LinkedinJob                @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
   title                     String
   location                  String
   text                      String
@@ -39,6 +29,24 @@ model LinkedinJobDetail {
 
   @@index([checksum])
   @@map("linkedin_job_detail")
+}
+
+model LinkedinJobDetailHistory {
+  id                 Int               @id @default(autoincrement())
+  jobPostingDetailId Int               @map("job_posting_detail_id")
+  jobPostingDetail   LinkedinJobDetail @relation(fields: [jobPostingDetailId], references: [id], onDelete: Cascade)
+  checksum           String
+  title              String
+  location           String
+  text               String
+  json               Json
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  linkedinCompany   LinkedinCompany? @relation(fields: [linkedinCompanyId], references: [id])
+  linkedinCompanyId Int?
+
+  @@map("linkedin_job_detail_history")
 }
 
 model LinkedinCompany {
@@ -61,22 +69,4 @@ model LinkedinCompany {
   jobPostingDetailHistories LinkedinJobDetailHistory[]
 
   @@map("linkedin_company")
-}
-
-model LinkedinJobDetailHistory {
-  id                 Int               @id @default(autoincrement())
-  jobPostingDetailId Int               @map("job_posting_detail_id")
-  jobPostingDetail   LinkedinJobDetail @relation(fields: [jobPostingDetailId], references: [id], onDelete: Cascade)
-  checksum           String
-  title              String
-  location           String
-  text               String
-  json               Json
-  createdAt          DateTime          @default(now()) @map("created_at")
-  updatedAt          DateTime          @updatedAt @map("updated_at")
-
-  linkedinCompany   LinkedinCompany? @relation(fields: [linkedinCompanyId], references: [id])
-  linkedinCompanyId Int?
-
-  @@map("linkedin_job_detail_history")
 }
