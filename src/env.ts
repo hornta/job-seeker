@@ -2,7 +2,7 @@ import z from "zod";
 
 const EnvSchema = z.object({
 	DATABASE_URL: z.string().describe("Database connection string"),
-	ANTHROPIC_API_KEY: z.string().describe("Anthropic API key"),
+	ANTHROPIC_API_KEY: z.string().optional().describe("Anthropic API key"),
 	PORT: z.coerce.number().default(3000).describe("Web server port"),
 	SKIP_JOB_ANALYZE: z.coerce
 		.boolean()
@@ -11,5 +11,3 @@ const EnvSchema = z.object({
 });
 
 export const ENV = EnvSchema.parse(process.env);
-
-console.log(process.env.SKIP_JOB_ANALYZE, ENV.SKIP_JOB_ANALYZE);
