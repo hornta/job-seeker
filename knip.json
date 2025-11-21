@@ -6,5 +6,5 @@
 	},
 	"tags": ["-lintignore"],
 	"ignore": ["generated/**"],
-	"ignoreDependencies": ["@types/pg", "pg"]
+	"ignoreDependencies": ["@types/pg", "pg", "@prisma/client"]
 }
